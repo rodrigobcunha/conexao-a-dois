@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Conexão a Dois</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- ===== Login Modal ===== -->
+    <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Acesso Restrito</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
+                    <input type="text" id="username" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
+                    <input type="password" id="password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                <p id="login-error" class="text-red-500 text-xs italic mb-4 hidden">Usuário ou senha inválidos.</p>
+                <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors">
+                    Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== Main Content (Hidden by default) ===== -->
+    <div id="main-content" class="hidden">
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Painel de Administração</h1>
+                    <p class="text-gray-600">Gerenciador de Perguntas - Conexão a Dois</p>
+                </div>
+                <!-- NOVO BOTÃO DE EXPORTAR -->
+                <button id="export-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors">
+                    Exportar perguntas.js
+                </button>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 py-8">
+            <!-- Add New Question Form -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Adicionar Nova Pergunta</h2>
+                <form id="add-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div class="md:col-span-2">
+                        <label for="new-question-text" class="block text-gray-700 text-sm font-bold mb-2">Texto da Pergunta:</label>
+                        <input type="text" id="new-question-text" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                    </div>
+                    <div>
+                        <label for="new-question-category" class="block text-gray-700 text-sm font-bold mb-2">Categoria:</label>
+                        <select id="new-question-category" class="shadow-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="leves">Leves e Divertidas</option>
+                            <option value="conhecendo">Conhecendo Melhor</option>
+                            <option value="profundas">Profundas e Íntimas</option>
+                            <option value="picantes">Picantes +18</option>
+                        </select>
+                    </div>
+                    <div class="md:col-start-3">
+                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors">
+                            Adicionar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Questions Display -->
+            <div id="questions-container" class="category-grid">
+                <!-- As categorias e perguntas serão inseridas aqui pelo JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== Edit Modal ===== -->
+    <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Editar Pergunta</h2>
+            <form id="edit-form">
+                <input type="hidden" id="edit-category">
+                <input type="hidden" id="edit-index">
+                <textarea id="edit-question-text" rows="4" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded-lg transition-colors">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Carrega o banco de perguntas base -->
+    <script src="perguntas.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- State Management ---
+        let appPerguntas = {};
+        const CATEGORY_TITLES = {
+            leves: '😊 Leves e Divertidas',
+            conhecendo: '✨ Conhecendo Melhor',
+            profundas: '🤍 Profundas e Íntimas',
+            picantes: '🔥 Picantes +18'
+        };
+
+        // --- DOM Elements ---
+        const loginModal = document.getElementById('login-modal');
+        const mainContent = document.getElementById('main-content');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const questionsContainer = document.getElementById('questions-container');
+        const addForm = document.getElementById('add-form');
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-form');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const exportBtn = document.getElementById('export-btn'); // Novo botão
+
+        // --- Authentication ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'Rod&Gab2025') {
+                loginModal.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                initializeApp();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // --- Core Functions ---
+        function initializeApp() {
+            loadQuestions();
+            renderAllQuestions();
+        }
+
+        function loadQuestions() {
+            const storedQuestions = localStorage.getItem('appPerguntas');
+            // A lógica agora prioriza o localStorage. Se não existir, usa o arquivo perguntas.js como base inicial.
+            if (storedQuestions) {
+                appPerguntas = JSON.parse(storedQuestions);
+            } else if (typeof perguntas !== 'undefined') {
+                // Primeira vez rodando: carrega do arquivo e salva no localStorage
+                appPerguntas = JSON.parse(JSON.stringify(perguntas)); // Deep clone
+                saveQuestions();
+            } else {
+                console.error("Arquivo 'perguntas.js' não encontrado. Crie um banco de perguntas inicial.");
+                appPerguntas = { leves: [], conhecendo: [], profundas: [], picantes: [] };
+            }
+        }
+
+        function saveQuestions() {
+            // Salva as perguntas no localStorage para persistência no navegador.
+            localStorage.setItem('appPerguntas', JSON.stringify(appPerguntas));
+        }
+
+        function renderAllQuestions() {
+            questionsContainer.innerHTML = '';
+            for (const category in appPerguntas) {
+                const categoryWrapper = document.createElement('div');
+                categoryWrapper.className = 'bg-white rounded-lg shadow-lg p-6';
+
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'text-xl font-bold text-gray-800 mb-4 border-b pb-2';
+                categoryTitle.textContent = CATEGORY_TITLES[category] || category;
+                categoryWrapper.appendChild(categoryTitle);
+
+                const questionsList = document.createElement('ul');
+                questionsList.className = 'space-y-3';
+                
+                if(appPerguntas[category].length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'Nenhuma pergunta nesta categoria.';
+                    li.className = 'text-gray-500 italic';
+                    questionsList.appendChild(li);
+                } else {
+                    appPerguntas[category].forEach((question, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-start gap-2';
+                        
+                        const p = document.createElement('p');
+                        p.textContent = question;
+                        p.className = 'text-gray-700 flex-1 break-words';
+                        
+                        const buttonsWrapper = document.createElement('div');
+                        buttonsWrapper.className = 'flex gap-2 flex-shrink-0';
+
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = '✏️';
+                        editBtn.className = 'text-sm hover:text-blue-600 transition-colors';
+                        editBtn.onclick = () => openEditModal(category, index);
+                        
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = '🗑️';
+                        deleteBtn.className = 'text-sm hover:text-red-600 transition-colors';
+                        deleteBtn.onclick = () => deleteQuestion(category, index);
+
+                        buttonsWrapper.appendChild(editBtn);
+                        buttonsWrapper.appendChild(deleteBtn);
+                        li.appendChild(p);
+                        li.appendChild(buttonsWrapper);
+                        questionsList.appendChild(li);
+                    });
+                }
+
+                categoryWrapper.appendChild(questionsList);
+                questionsContainer.appendChild(categoryWrapper);
+            }
+        }
+
+        // --- CRUD Operations ---
+        function addQuestion(text, category) {
+            if (!appPerguntas[category]) {
+                appPerguntas[category] = [];
+            }
+            appPerguntas[category].push(text);
+            saveQuestions();
+            renderAllQuestions();
+        }
+
+        function deleteQuestion(category, index) {
+            if (confirm(`Tem certeza que deseja excluir a pergunta:\n\n"${appPerguntas[category][index]}"`)) {
+                appPerguntas[category].splice(index, 1);
+                saveQuestions();
+                renderAllQuestions();
+            }
+        }
+
+        function openEditModal(category, index) {
+            document.getElementById('edit-category').value = category;
+            document.getElementById('edit-index').value = index;
+            document.getElementById('edit-question-text').value = appPerguntas[category][index];
+            editModal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
+
+        function saveEditedQuestion() {
+            const category = document.getElementById('edit-category').value;
+            const index = document.getElementById('edit-index').value;
+            const newText = document.getElementById('edit-question-text').value;
+
+            if (category && index !== null && newText) {
+                appPerguntas[category][index] = newText;
+                saveQuestions();
+                renderAllQuestions();
+                closeEditModal();
+            }
+        }
+        
+        // --- NOVA FUNÇÃO DE EXPORTAÇÃO ---
+        function exportToFile() {
+            // Formata o objeto de perguntas como uma string de código JavaScript.
+            const fileContent = `const perguntas = ${JSON.stringify(appPerguntas, null, 4)};`;
+            
+            // Cria um objeto Blob, que é como um arquivo na memória.
+            const blob = new Blob([fileContent], { type: 'application/javascript' });
+            
+            // Cria um link temporário para o download.
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'perguntas.js'; // Nome do arquivo a ser baixado.
+            
+            // Adiciona o link ao corpo, clica nele e depois o remove.
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // --- Event Listeners ---
+        addForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const textInput = document.getElementById('new-question-text');
+            const categorySelect = document.getElementById('new-question-category');
+            addQuestion(textInput.value, categorySelect.value);
+            textInput.value = '';
+        });
+
+        editForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveEditedQuestion();
+        });
+
+        cancelEditBtn.addEventListener('click', closeEditModal);
+        
+        exportBtn.addEventListener('click', exportToFile); // Adiciona o evento ao novo botão.
+    });
+    </script>
+</body>
+</html>
