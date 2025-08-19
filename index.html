@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexão a Dois</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1 {
+            font-family: 'Dancing Script', cursive;
+        }
+        /* Animação de fade-in para a pergunta */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-100 to-teal-100 min-h-screen flex items-center justify-center p-4">
+
+    <main class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 md:p-12 text-center max-w-2xl w-full">
+        <!-- Título do App -->
+        <h1 class="text-5xl sm:text-6xl text-rose-800 mb-4">Conexão a Dois: Rodrigo & Gabriel</h1>
+        <p class="text-gray-600 mb-8 text-lg">Clique em uma categoria para gerar uma pergunta.</p>
+
+        <!-- Botões de Categoria -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <button id="btn-leves" class="bg-rose-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-rose-600 transition-all duration-300 transform hover:scale-105">
+                Leves e Divertidas
+            </button>
+            <button id="btn-conhecendo" class="bg-teal-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-teal-600 transition-all duration-300 transform hover:scale-105">
+                Conhecendo Melhor
+            </button>
+            <button id="btn-profundas" class="bg-indigo-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105">
+                Profundas e Íntimas
+            </button>
+        </div>
+
+        <!-- Área de Exibição da Pergunta -->
+        <div id="pergunta-container" class="bg-white p-8 rounded-xl shadow-inner min-h-[150px] flex items-center justify-center">
+            <p id="texto-pergunta" class="text-2xl text-gray-700 font-medium">Sua pergunta aparecerá aqui...</p>
+        </div>
+    </main>
+
+    <script>
+        // --- BANCO DE PERGUNTAS ---
+        const perguntas = {
+            leves: [
+                "Qual foi a primeira coisa que você pensou quando me viu?",
+                "Se você pudesse ter qualquer superpoder, qual seria?",
+                "Qual é o seu sabor de pizza preferido?",
+                "Você prefere cães ou gatos?",
+                "Qual foi o show mais legal que você já foi?",
+                "Qual é o seu filme de 'sessão da tarde' favorito?",
+                "Se você fosse um animal, qual seria?",
+                "Qual é a sua sobremesa dos sonhos?",
+                "Você prefere praia ou campo?",
+                "Qual música sempre te faz querer dançar?",
+                "Qual foi a viagem mais engraçada que você já fez?",
+                "Qual é o seu talento mais inútil?",
+                "Se você pudesse jantar com qualquer pessoa famosa (viva ou morta), quem seria?",
+                "Qual é o seu emoji mais usado?",
+                "O que você pediria se um gênio te concedesse três desejos?",
+                "Qual série você poderia maratonar para sempre?",
+                "Você é uma pessoa mais do dia ou da noite?",
+                "Qual foi a coisa mais estranha que você já comeu?",
+                "Qual é o seu feriado favorito?",
+                "Se você tivesse uma banda, qual seria o nome dela?",
+                "Qual é a sua piada favorita?",
+                "Qual era o seu desenho animado preferido na infância?",
+                "Qual o presente mais bizarro que você já ganhou?",
+                "Você prefere café ou chá?",
+                "Qual é a sua estação do ano preferida?",
+                "Qual é a sua memória mais engraçada comigo?",
+                "Qual a coisa mais vergonhosa que já aconteceu com você?",
+                "Se dinheiro não fosse um problema, o que você faria amanhã?",
+                "Qual é o seu jogo de tabuleiro ou de cartas favorito?",
+                "Qual cheiro te traz uma boa lembrança?",
+                "Você prefere cantar no chuveiro ou no carro?",
+                "Qual é a sua maior mania?",
+                "Qual a comida que você não suporta?",
+                "Qual foi a última coisa que te fez rir alto?",
+                "Qual é o seu apelido de infância?",
+                "Você prefere um livro ou um filme?",
+                "Qual a sua lembrança favorita das férias escolares?",
+                "Qual a coisa mais impulsiva que você já comprou?",
+                "Qual o seu lugar favorito no mundo?",
+                "Qual a sua bebida favorita?",
+                "Qual a sua cor preferida?",
+                "O que você mais gosta de fazer em um dia de chuva?",
+                "Qual o seu esporte favorito para assistir? E para praticar?",
+                "Qual a sua citação ou ditado favorito?",
+                "Se você pudesse voltar no tempo, para qual época iria?",
+                "Qual a sua flor ou planta preferida?",
+                "Qual foi o melhor conselho que você já recebeu?",
+                "Qual a sua forma preferida de relaxar?",
+                "Qual a sua rede social favorita?",
+                "Qual a sua maior 'gastura' ou 'agonia'?",
+            ],
+            conhecendo: [
+                "Qual é a sua maior paixão na vida?",
+                "O que você mais admira em seus pais?",
+                "Qual foi o momento em que você se sentiu mais orgulhoso(a) de si mesmo(a)?",
+                "Qual é a sua linguagem do amor principal? (Palavras de afirmação, tempo de qualidade, presentes, atos de serviço, toque físico)",
+                "Qual é a sua memória de infância mais feliz?",
+                "O que te faz sentir amado(a) e valorizado(a)?",
+                "Qual é a sua maior qualidade? E um defeito que você gostaria de melhorar?",
+                "Como você descreveria um dia perfeito?",
+                "Qual foi o maior desafio que você já superou?",
+                "O que você aprendeu com seus relacionamentos passados?",
+                "Qual é o seu maior sonho ou objetivo de vida no momento?",
+                "Qual é a coisa mais importante que você busca em uma amizade?",
+                "Como você lida com o estresse?",
+                "O que você mais valoriza em mim?",
+                "Qual é a sua maior insegurança?",
+                "Qual é a sua definição de sucesso?",
+                "Se você pudesse mudar algo em sua criação, o que seria?",
+                "Qual é a sua lembrança favorita do nosso relacionamento até agora?",
+                "O que te faz sentir mais vivo(a)?",
+                "Qual hábito você gostaria de desenvolver?",
+                "Qual é a sua maior inspiração?",
+                "Como você gosta de comemorar seu aniversário?",
+                "Qual é a lição mais importante que a vida já te ensinou?",
+                "O que te irrita profundamente?",
+                "Qual é a sua opinião sobre espiritualidade ou religião?",
+                "Qual é o seu maior medo?",
+                "O que você sempre quis aprender a fazer?",
+                "Como você demonstra amor e carinho pelas pessoas que importa?",
+                "Qual foi um momento em que você se sentiu completamente feliz?",
+                "Qual é a sua maior força como parceiro(a)?",
+                "O que você acha que é o seu propósito na vida?",
+                "Qual é a sua memória mais antiga?",
+                "O que te faz chorar? (De alegria ou tristeza)",
+                "Qual é a coisa mais aventureira que você já fez?",
+                "Como você se vê daqui a 5 anos? E daqui a 10?",
+                "Qual é a sua maior saudade?",
+                "Qual é a sua opinião sobre ter filhos?",
+                "O que significa 'família' para você?",
+                "Qual foi a decisão mais difícil que você já teve que tomar?",
+                "Qual é a sua forma favorita de passar tempo de qualidade comigo?",
+                "O que você mais admira na minha personalidade?",
+                "Qual é a sua maior preocupação com o futuro?",
+                "Qual é a sua música favorita e por quê?",
+                "O que te motiva a levantar da cama todos os dias?",
+                "Qual é a sua maior conquista profissional ou acadêmica?",
+                "Como você se sente sobre o lugar onde cresceu?",
+                "Qual é a sua maior extravagância? (Algo que você gasta dinheiro sem culpa)",
+                "Qual é a sua tradição familiar favorita?",
+                "O que você acha que acontece depois da morte?",
+                "Qual é a coisa mais gentil que alguém já fez por você?",
+            ],
+            profundas: [
+                "O que em nosso relacionamento te faz sentir mais seguro(a)?",
+                "Qual é a sua maior necessidade emocional que eu posso suprir?",
+                "Existe algo que você tem medo de me perguntar ou me dizer?",
+                "Como podemos melhorar nossa comunicação?",
+                "Qual é a sua fantasia ou desejo mais profundo que você gostaria de compartilhar comigo?",
+                "O que 'amor incondicional' significa para você?",
+                "Qual foi um momento em que você se sentiu desconectado(a) de mim? O que podemos fazer para evitar isso?",
+                "Qual é o seu maior medo em relação ao nosso futuro juntos?",
+                "De que forma você se sente mais visto(a) e compreendido(a) por mim?",
+                "Qual é uma ferida do passado que ainda afeta você hoje?",
+                "O que te faria terminar nosso relacionamento?",
+                "Como você define intimidade, além do sexo?",
+                "Qual é a sua maior esperança para nós como um casal?",
+                "Existe alguma área em sua vida que você sente que eu não faço parte e gostaria que eu fizesse?",
+                "O que eu faço que te magoa, mesmo que sem intenção?",
+                "Qual é a sua visão de um casamento ou parceria ideal para a vida toda?",
+                "Como posso te apoiar melhor nos seus dias ruins?",
+                "Qual é uma crença limitante que você tem sobre si mesmo(a)?",
+                "O que você nunca abriria mão por um relacionamento?",
+                "Qual foi o momento em que você soube que me amava?",
+                "Como nosso relacionamento mudou você para melhor?",
+                "Qual é a coisa mais importante que você aprendeu sobre o amor comigo?",
+                "Existe algum segredo que você nunca contou a ninguém?",
+                "Como podemos manter a paixão e o romance vivos a longo prazo?",
+                "Qual é o papel do perdão em nosso relacionamento?",
+                "O que você precisa de mim quando se sente vulnerável?",
+                "Como você se sente sobre nossas finanças como casal?",
+                "Qual é a sua maior vulnerabilidade?",
+                "De que maneira podemos crescer juntos, tanto individualmente quanto como casal?",
+                "Qual é a sua memória sexual favorita nossa?",
+                "Existe algo que você gostaria de experimentar na cama?",
+                "O que te faz sentir mais desejado(a) por mim?",
+                "Qual é a sua maior prioridade na vida neste momento? E como eu me encaixo nela?",
+                "O que te faz sentir verdadeiramente em paz?",
+                "Qual é a sua definição de 'alma gêmea'? Você acredita nisso?",
+                "Se você pudesse me dar um conselho para ser um(a) parceiro(a) melhor, qual seria?",
+                "Qual é a sua maior gratidão em relação à nossa vida juntos?",
+                "Como você lida com o ciúme?",
+                "Qual é a sua maior qualidade que você acha que eu não percebo?",
+                "O que você acha que é o maior desafio para os casais de hoje?",
+                "Qual é a sua linguagem de desculpas? (Como você prefere que eu peça desculpas?)",
+                "Qual é a coisa mais romântica que eu já fiz por você?",
+                "O que te faz confiar em mim completamente?",
+                "Como podemos garantir que ambos nos sintamos iguais e respeitados na relação?",
+                "Qual é um sonho que você tem para nós dois que ainda não compartilhamos?",
+                "Qual é a sua maior lição sobre si mesmo(a) que aprendeu estando comigo?",
+                "O que te assusta na ideia de envelhecer?",
+                "Como podemos nos tornar um time ainda melhor para enfrentar os desafios da vida?",
+                "Se nosso amor fosse uma música, qual seria o título dela?",
+                "Qual é a promessa mais importante que podemos fazer um ao outro hoje?",
+            ]
+        };
+
+        // ELEM DOM
+        const btnLeves = document.getElementById('btn-leves');
+        const btnConhecendo = document.getElementById('btn-conhecendo');
+        const btnProfundas = document.getElementById('btn-profundas');
+        const textoPergunta = document.getElementById('texto-pergunta');
+        const perguntaContainer = document.getElementById('pergunta-container');
+        
+        // --- FUNC. GERAR PERGUNTA ---
+        function gerarPergunta(categoria) {
+            const listaDePerguntas = perguntas[categoria];
+            if (!listaDePerguntas || listaDePerguntas.length === 0) {
+                textoPergunta.textContent = "Não tEMM perguntas nesta categoria.";
+                return;
+            }
+
+            // Gera índice aleatório
+            const indiceAleatorio = Math.floor(Math.random() * listaDePerguntas.length);
+            const perguntaSorteada = listaDePerguntas[indiceAleatorio];
+
+            // animação
+            perguntaContainer.classList.remove('fade-in');
+            // refazer a animação
+            void perguntaContainer.offsetWidth; 
+            perguntaContainer.classList.add('fade-in');
+
+            // mostr a pergunta
+            textoPergunta.textContent = perguntaSorteada;
+        }
+
+        btnLeves.addEventListener('click', () => gerarPergunta('leves'));
+        btnConhecendo.addEventListener('click', () => gerarPergunta('conhecendo'));
+        btnProfundas.addEventListener('click', () => gerarPergunta('profundas'));
+    </script>
+</body>
+</html>
